@@ -6,6 +6,7 @@
 - everything is a file (everything is actually a process)
 - system calls
 - aka containers
+- Comparisons to VMs and custom runtime
 
 ## Intro to dockerfile
 
@@ -26,3 +27,9 @@
 
 - Choose your own adventure, pick a language you know that can listen to a port
 - Host it on Radix
+
+## Honorable mentions
+
+- Docker Compose
+- Azure Container Apps
+- Dev containers

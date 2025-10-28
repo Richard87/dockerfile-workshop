@@ -1,8 +1,8 @@
-FROM docker.io/golang AS builder
+FROM golang:latest AS builder
 COPY ./ ./
-RUN go build -o /app
+RUN go build -o app
 USER 1000
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/hello-world/app"]
 
 # gcr.io/distroless/static
 # FROM scratch 

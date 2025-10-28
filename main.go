@@ -1,14 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Handling request...")
-		w.Write([]byte("Hello world!"))
+		_, _ = fmt.Fprintf(w, "%s: Hello world!", time.Now().Format(time.Kitchen))
 	})
 
 	log.Printf("Starting webserver on http://localhost:8080")

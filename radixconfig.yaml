@@ -9,6 +9,8 @@ spec:
     - name: dev
       build:
         from: master
+  build:
+    useBuildKit: true
   components:
     - name: web
       ports:

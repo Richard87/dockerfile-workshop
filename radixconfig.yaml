@@ -8,7 +8,7 @@ spec:
   environments:
     - name: dev
       build:
-        from: main
+        from: master
   components:
     - name: web
       ports:

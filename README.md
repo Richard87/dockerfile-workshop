@@ -57,6 +57,7 @@ Prefer scratch, distroless or alpine images to reduce footprint and vulnerabilit
 - `docker build` is just one example, create container images with `bash`, `buildah` (Radix does this!), or even `terraform`
 - Container Registries and OCI regisitries
 - Signed images
+- WASM runtimes?
 
 ## Common issues
 

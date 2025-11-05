@@ -53,7 +53,7 @@ Prefer scratch, distroless or alpine images to reduce footprint and vulnerabilit
 - Azure Container Apps
 - Dev containers
 - dive
--  docker image inspect ...
+- docker image inspect ...
 - `docker build` is just one example, create container images with `bash`, `buildah` (Radix does this!), or even `terraform`
 - Container Registries and OCI regisitries
 - Signed images

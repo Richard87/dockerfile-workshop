@@ -10,7 +10,7 @@ import (
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Handling request...")
-		_, _ = fmt.Fprintf(w, "%s: Hello world!", time.Now().Format(time.Kitchen))
+		_, _ = fmt.Fprintf(w, "%s: Hello world!", time.Now().Format(time.DateTime))
 	})
 
 	log.Printf("Starting webserver on http://localhost:8080")

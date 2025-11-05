@@ -7,6 +7,8 @@ ENV CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=${TARGETARCH}
 
+WORKDIR /src
+
 # Download dependencies first to leverage Docker layer caching
 COPY ./go.* ./
 RUN go mod download
@@ -21,5 +23,6 @@ RUN go build -ldflags="-s -w" -o /app
 # but includes CA certificates for HTTPS traffic among other things
 FROM gcr.io/distroless/static
 COPY --from=builder /app /app
+EXPOSE 8080
 USER 1000
 ENTRYPOINT ["/app"]

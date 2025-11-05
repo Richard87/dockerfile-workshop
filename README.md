@@ -18,7 +18,7 @@
 
 - Layers
 - Metadata
-  - **FROM**choo
+  - **FROM**
   - RUN
   - COMMAND
   - USER

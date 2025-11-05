@@ -1,5 +1,5 @@
 # Run the build stage on the build platform
-FROM --platform=$BUILDPLATFORM docker.io/golang:1.25.2-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM docker.io/golang:1.25.3-alpine3.22 AS builder
 
 # Configure GO compiler to user target architecture and platform, this is significantly faster for cross-compiling than using emulation
 ARG TARGETARCH
@@ -8,20 +8,13 @@ ENV CGO_ENABLED=0 \
     GOARCH=${TARGETARCH}
 
 WORKDIR /src
-
-# Download dependencies first to leverage Docker layer caching
 COPY ./go.* ./
 RUN go mod download
-
-# Copy often-chaning source code later on to maximize layer caching
 COPY ./ ./
-
-# Build the Go application with optimizations to reduce binary size
 RUN go build -ldflags="-s -w" -o /app
 
-# Use a minimal base image to run the application, Googles Distroless sets up a basic filesystem without package manager or shell, 
-# but includes CA certificates for HTTPS traffic among other things
-FROM gcr.io/distroless/static
+# FROM gcr.io/distroless/static - Used by Radix, contains CA certificate bundle and other nicieties
+FROM scratch
 COPY --from=builder /app /app
 EXPOSE 8080
 USER 1000

@@ -11,6 +11,7 @@
 ## Lets build!
 
 - Choose your own adventure, pick a language you know that can listen to a port
+- Demo Layers optimization
 - Host it on Radix
 
 ## Intro to dockerfile
@@ -29,6 +30,7 @@
     - PORT
     - STOPSIGNAL (default SIGTERM)
     - RUN --mount=type=secret,id=aws,target=/root/.aws/credentials aws s3 cp s3://... ...
+- Build Context
 - Zip file and Text
 
 `docker build -t test .`
@@ -45,13 +47,16 @@ Prefer scratch, distroless or alpine images to reduce footprint and vulnerabilit
 
 ## Honorable mentions
 
+- .dockerignore
 - Docker Compose
+- Omnia Radix
 - Azure Container Apps
 - Dev containers
 - dive
 -  docker image inspect ...
 - `docker build` is just one example, create container images with `bash`, `buildah` (Radix does this!), or even `terraform`
-- Radix
+- Container Registries and OCI regisitries
+- Signed images
 
 ## Common issues
 

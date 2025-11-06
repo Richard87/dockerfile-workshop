@@ -1,5 +1,8 @@
 # What even is a (docker) Container
 
+- Why Why WHy
+- VM?
+
 ## Intro to containers
 
 - chroot - 1982
@@ -58,10 +61,12 @@ Prefer scratch, distroless or alpine images to reduce footprint and vulnerabilit
 - Container Registries and OCI regisitries
 - Signed images
 - WASM runtimes?
+- Multi-Architecture manifests
+- scratch / chiseled / distroless
 
 ## Common issues
 
 - Read only filesystem, much safer, but it might be tricky to know where an app writes to (temporary files, cache, data). Use `VOLUME` and specify folders that should be mounted in, and avoid writing to the filesystem without using them.  (Servers/Nodes generally have limited space that are shared across containers)
 - Permissions, normally your default user id is 1000, and running with that user in container avoids a lot of filesystem issues, but also opens up a vulnerability if a container escape happens.
 - User must be a id, not a name, so `USER nginx` will only work in Docker, but not in Kubernetes. Use `USER 1000` instead, we usually use `USER 65534` for a common `nobody` account.
-- 
+- Privileged ports (lower than 1024) are usually blocked

@@ -1,0 +1,6 @@
+# FIXED EXAMPLE 2: Correct user permissions
+FROM alpine:latest
+RUN adduser -D appuser
+COPY --chown=appuser:appuser examples/config.txt /app/config.txt
+USER appuser
+CMD ["cat", "/app/config.txt"]

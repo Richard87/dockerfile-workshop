@@ -1,0 +1,140 @@
+# Common Dockerfile Failures and Permission Issues Examples
+# This file demonstrates various ways Dockerfiles can fail
+
+# ================================================================
+# EXAMPLE 1: Missing executable permissions
+# ================================================================
+FROM alpine:latest
+COPY script.sh /app/
+# PROBLEM: script.sh doesn't have execute permissions
+ENTRYPOINT ["/app/script.sh"]
+# FAILS WITH: exec /app/script.sh: permission denied
+
+# FIX: Add chmod to make it executable
+# RUN chmod +x /app/script.sh
+
+# ================================================================
+# EXAMPLE 2: Wrong user permissions for files
+# ================================================================
+FROM alpine:latest
+RUN adduser -D appuser
+COPY --chown=root:root sensitive-config.txt /app/config.txt
+USER appuser
+# PROBLEM: appuser can't read root-owned file
+RUN cat /app/config.txt
+# FAILS WITH: cat: /app/config.txt: Permission denied
+
+# FIX: Use correct ownership
+# COPY --chown=appuser:appuser sensitive-config.txt /app/config.txt
+
+# ================================================================
+# EXAMPLE 3: Missing write permissions for application directory
+# ================================================================
+FROM python:alpine
+RUN adduser -D pyuser
+WORKDIR /app
+COPY --chown=root:root . /app/
+USER pyuser
+# PROBLEM: User can't write to /app directory or subdirectories
+RUN pip install -r requirements.txt
+# FAILS WITH: PermissionError: [Errno 13] Permission denied
+
+# FIX: Ensure user has proper permissions
+# RUN chown -R pyuser:pyuser /app
+# or
+# COPY --chown=pyuser:pyuser . /app/
+
+# ================================================================
+# EXAMPLE 4: Scratch image with dynamic linking
+# ================================================================
+FROM golang:alpine AS go-builder
+WORKDIR /src
+COPY . .
+# PROBLEM: Default Go build creates dynamically linked binary
+RUN go build -o /app main.go
+
+FROM scratch
+COPY --from=go-builder /app /app
+ENTRYPOINT ["/app"]
+# FAILS WITH: exec /app: no such file or directory
+# (because dynamic linker is missing)
+
+# FIX: Create statically linked binary
+# RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o /app main.go
+
+# ================================================================
+# EXAMPLE 5: Wrong file ownership in multi-stage build
+# ================================================================
+FROM node:alpine AS node-builder
+WORKDIR /build
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+# Files are owned by root (default in Docker)
+
+FROM nginx:alpine
+# PROBLEM: Copying files with wrong ownership
+COPY --from=node-builder /build/dist /usr/share/nginx/html
+USER 101  # nginx user
+# Some nginx processes might fail to read files if permissions are too restrictive
+
+# FIX: Set correct ownership
+# COPY --from=node-builder --chown=nginx:nginx /build/dist /usr/share/nginx/html
+
+# ================================================================
+# EXAMPLE 6: Temporary directory permissions
+# ================================================================
+FROM alpine:latest
+RUN adduser -D appuser
+USER appuser
+# PROBLEM: /tmp might not be writable by non-root user in some base images
+RUN echo "test" > /tmp/test.txt
+# MIGHT FAIL WITH: Permission denied
+
+# FIX: Ensure /tmp has correct permissions or use user-specific temp dir
+# RUN mkdir -p /home/appuser/tmp && echo "test" > /home/appuser/tmp/test.txt
+
+# ================================================================
+# EXAMPLE 7: Home directory not existing for non-root user
+# ================================================================
+FROM alpine:latest
+RUN adduser -D --no-create-home appuser
+USER appuser
+WORKDIR /home/appuser
+# PROBLEM: Home directory doesn't exist and user can't create it
+RUN touch config.txt
+# FAILS WITH: Permission denied
+
+# FIX: Create home directory with proper permissions
+# RUN mkdir -p /home/appuser && chown appuser:appuser /home/appuser
+# or don't use --no-create-home flag
+
+# ================================================================
+# EXAMPLE 8: COPY with incorrect permissions
+# ================================================================
+FROM alpine:latest
+RUN adduser -D appuser
+# PROBLEM: File copied with execute permissions when not needed (security issue)
+COPY --chmod=777 data.txt /app/data.txt
+USER appuser
+# PROBLEM: Overly permissive permissions
+
+# FIX: Use minimal necessary permissions
+# COPY --chmod=644 data.txt /app/data.txt
+
+# ================================================================
+# EXAMPLE 9: Volume mount permission issues
+# ================================================================
+FROM alpine:latest
+RUN adduser -D --uid 1000 appuser
+USER appuser
+VOLUME ["/data"]
+# PROBLEM: Host volume might have different UID/GID ownership
+CMD ["sh", "-c", "echo 'test' > /data/test.txt"]
+# MIGHT FAIL if host directory is owned by different user
+
+# FIX: Use matching UIDs or handle permissions in entrypoint script
+# COPY entrypoint.sh /entrypoint.sh
+# ENTRYPOINT ["/entrypoint.sh"]
+# where entrypoint.sh fixes permissions before running main command

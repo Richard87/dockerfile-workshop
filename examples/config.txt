@@ -1,0 +1,2 @@
+secret_key=super_secret_password_123
+database_url=postgres://user:pass@localhost:5432/db

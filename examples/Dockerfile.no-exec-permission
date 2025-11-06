@@ -1,0 +1,5 @@
+# FAILING EXAMPLE 1: Missing execute permissions
+FROM alpine:latest
+COPY examples/script.sh /app/script.sh
+# Missing: RUN chmod +x /app/script.sh
+ENTRYPOINT ["/app/script.sh"]

@@ -1,0 +1,8 @@
+# FAILING EXAMPLE 2: Wrong user permissions
+FROM alpine:latest
+RUN adduser -D appuser
+COPY examples/config.txt /app/config.txt
+RUN chmod 600 /app/config.txt  # Only root can read
+USER appuser
+# This will fail because appuser can't read root-only file
+CMD ["cat", "/app/config.txt"]

@@ -1,0 +1,5 @@
+# FIXED EXAMPLE 1: Proper execute permissions
+FROM alpine:latest
+COPY examples/script.sh /app/script.sh
+RUN chmod +x /app/script.sh
+ENTRYPOINT ["/app/script.sh"]
